@@ -59,12 +59,15 @@ router.put('/:id', (req, res) => {
         })
     }
 
-    const { name, description } = changes
-    if (name === undefined || description === undefined) {
+    const requiredFields = ['name', 'description', 'completed']
+    const missingFields = requiredFields.filter(field => changes[field] === undefined);
+
+    if (missingFields.length > 0) {
         return res.status(400).json({
-            message: "Name and description are required",
+            message: `Missing required fields: ${missingFields.join(', ')}`,
         })
     }
+
     Projects.update(id, changes)
         .then(updatedProject => {
             if (updatedProject) {
